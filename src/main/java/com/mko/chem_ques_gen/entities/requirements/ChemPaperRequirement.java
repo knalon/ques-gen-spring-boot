@@ -12,7 +12,7 @@ import com.mko.chem_ques_gen.enums.Chapter;
 import com.mko.chem_ques_gen.enums.LabelVerification;
 import com.mko.chem_ques_gen.enums.QuestionType;
 
-public class ChemPaperRequirement extends PaperRequirementTemplate{
+public class ChemPaperRequirement extends AbstractPaperRequirement{
 	
 	//This is a very important list which will hold every single chapter + quesType requirement.
 	//for example, c1RequirementTF, c1RequirementFB, c1RequirementMQ and so on.
@@ -30,7 +30,8 @@ public class ChemPaperRequirement extends PaperRequirementTemplate{
 									String title,
 									String month,
 									String year,
-									String grade
+									String grade,
+									String timeAllowed
 									) {
 		
 		
@@ -64,6 +65,7 @@ public class ChemPaperRequirement extends PaperRequirementTemplate{
 		this.setMonth(month);
 		this.setYear(year);
 		this.setGrade(grade);
+		this.setTimeAllowed(timeAllowed);
 		
 		
 		//adding specific number of questions to each requirement.

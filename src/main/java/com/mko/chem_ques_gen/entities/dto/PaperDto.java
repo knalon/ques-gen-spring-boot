@@ -6,6 +6,7 @@ import java.util.List;
 import com.mko.chem_ques_gen.entities.ChemQuestion;
 import com.mko.chem_ques_gen.entities.Paper;
 import com.mko.chem_ques_gen.enums.EnumFactory;
+import com.mko.chem_ques_gen.formatter.Formatter;
 
 public class PaperDto {
 
@@ -16,6 +17,9 @@ public class PaperDto {
 	private String month;
 	private String year;
 	private List<ChemQuestion> chemQuestions;
+	private String timeAllowed;
+	private String createdOn;
+	private String lastUpdatedOn;
 	
 	//--------------end of attribute
 	public PaperDto() {
@@ -23,7 +27,20 @@ public class PaperDto {
 	}
 
 	public PaperDto(Integer paperId, String grade, String title, String month, String year, 
-						List<ChemQuestion> questions) {
+						List<ChemQuestion> questions, String timeAllowed) {
+		super();
+		this.paperId = paperId;
+		this.grade = grade;
+		this.title = title;
+		this.month = month;
+		this.year = year;
+		this.timeAllowed = timeAllowed;
+		
+		this.chemQuestions = questions;
+	}
+	
+	public PaperDto(Integer paperId, String grade, String title, String month, String year, 
+			List<ChemQuestion> questions, String timeAllowed, String createdOn, String lastUpdatedOn) {
 		super();
 		this.paperId = paperId;
 		this.grade = grade;
@@ -32,6 +49,8 @@ public class PaperDto {
 		this.year = year;
 		
 		this.chemQuestions = questions;
+		this.createdOn = createdOn;
+		this.lastUpdatedOn = Formatter.dateTimeNow();
 	}
 	//------------- end of constructors
 	
@@ -76,17 +95,35 @@ public class PaperDto {
 		this.chemQuestions = chemQuestions;
 	}
 
+	
+	public String getCreatedOn() {
+		return createdOn;
+	}
+	
+	public String getLastUpdatedOn() {
+		return lastUpdatedOn;
+	}
+
+	public void setLastUpdatedOn(String lastUpdatedOn) {
+		this.lastUpdatedOn = lastUpdatedOn;
+	}
+
+	
+	public String gettimeAllowed() {
+		return timeAllowed;
+	}
+
+	public void settimeAllowed(String timeAllowed) {
+		this.timeAllowed = timeAllowed;
+	}
+
 	//end of getter and setter
 	public Paper dtoToPaper() {
 		return new Paper(this.getPaperId(), EnumFactory.generateGrade(this.getGrade()), 
-								this.getTitle(), this.getMonth(), this.getYear(), this.getChemQuestions());
+								this.getTitle(), this.getMonth(), this.getYear(), this.getChemQuestions(),
+								this.timeAllowed, this.getCreatedOn(), this.getLastUpdatedOn());
 	}
 
-	@Override
-	public String toString() {
-		return "PaperDto [paperId=" + paperId + ", grade=" + grade + ", title=" + title + ", month=" + month + ", year="
-				+ year + ", chemQuestions=" + chemQuestions + "]";
-	}
 	
 	
 }

@@ -5,19 +5,20 @@ import java.util.List;
 import com.mko.chem_ques_gen.enums.Chapter;
 import com.mko.chem_ques_gen.enums.QuestionType;
 
-public abstract class PaperRequirementTemplate {
+public abstract class AbstractPaperRequirement {
 	private String month;
 	private String year;
 	private String title;
 	private String grade;
+	private String timeAllowed;
 	
 	//----------end of attributes
 	
-	public PaperRequirementTemplate() {
+	public AbstractPaperRequirement() {
 		super();
 	}
 	
-	public PaperRequirementTemplate(String month, String year, String title) {
+	public AbstractPaperRequirement(String month, String year, String title) {
 		super();
 		this.month = month;
 		this.year = year;
@@ -54,7 +55,13 @@ public abstract class PaperRequirementTemplate {
 	public void setGrade(String grade) {
 		this.grade = grade;
 	}
-	
+	 
+	public String getTimeAllowed() {
+		return timeAllowed;
+	}
+	public void setTimeAllowed(String timeAllowed) {
+		this.timeAllowed = timeAllowed;
+	}
 	
 	
 	//---------------end of getter and setter

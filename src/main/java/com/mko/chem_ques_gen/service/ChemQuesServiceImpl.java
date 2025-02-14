@@ -2,6 +2,7 @@ package com.mko.chem_ques_gen.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.mko.chem_ques_gen.entities.ChemQuestion;
 import com.mko.chem_ques_gen.entities.dto.ChemQuestionDto;
 import com.mko.chem_ques_gen.entities.requirements.QuestionRequirement;
+import com.mko.chem_ques_gen.formatter.Formatter;
 import com.mko.chem_ques_gen.repository.ChemQuestionRepository;
 
 import jakarta.transaction.Transactional;
@@ -42,8 +44,18 @@ public class ChemQuesServiceImpl implements ChemQuestionService{
 	}
 	
 //------------- Overridden routed methods
+	
+	public ResponseEntity<ChemQuestionDto> getQuestionById(Integer id){
+		try {
+			return new ResponseEntity<>(chemQuesRepo.findById(id).get().questionToDto(),HttpStatus.OK);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(new ChemQuestionDto(), HttpStatus.BAD_REQUEST);
+	}
 	//all
-	//1
+	
+	//1 @utilized
 	@Override
 	public ResponseEntity<List<ChemQuestionDto>> getAllQuestions() {
 		
@@ -51,14 +63,14 @@ public class ChemQuesServiceImpl implements ChemQuestionService{
 			return new ResponseEntity<>(this.quesListToDtoList(chemQuesRepo.findAll()), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} 
 		return new ResponseEntity<> (new ArrayList<>(), HttpStatus.BAD_REQUEST);
 	}
 
 	
 	// ---------- approach 2 : utilize native query to retrieve the desired data
 
-	//4
+	//2
 	//all by chapter and type
 	@Override
 	public ResponseEntity<List<ChemQuestionDto>> getQuestionsByChapterAndTypeAndGrade
@@ -213,7 +225,9 @@ public class ChemQuesServiceImpl implements ChemQuestionService{
 	public ResponseEntity<String> updateQuestion(ChemQuestionDto dto) {
 		try {
 			if(chemQuesRepo.findById(dto.getChemQuestionId()).isPresent()) {
-				chemQuesRepo.save(dto.dtoToQuestion());
+				ChemQuestion question = dto.dtoToQuestion();
+				question.setLastUpdatedOn(Formatter.dateTimeNow());
+				chemQuesRepo.save(question);
 				return new ResponseEntity<> ("Updated Successfully to \n".concat(dto.toString()), HttpStatus.OK);
 			};
 			//HttpStatus No_Content does not return this string in the responseEntity.
@@ -245,17 +259,28 @@ public class ChemQuesServiceImpl implements ChemQuestionService{
 	
 //----------------Controller Specialized Methods
 
+	// @utilized
 	@Override
 	public ResponseEntity<List<String>> addMultipleQuestions(List<ChemQuestionDto> chemQuesDtoList) {
 		List<String> successList = new ArrayList<>();
 		List<String> failureList = new ArrayList<>();
 		for(ChemQuestionDto chemQuesDto: chemQuesDtoList) {
 			try {
-				String success = "Question has been added successfully for " 
-									.concat(chemQuesRepo
-											.save(chemQuesDto.dtoToQuestion())
-											.toString());
-				successList.add(success);
+				if(chemQuesDto.getChemQuestionContent() != "" &&
+						chemQuesDto.getChemQuestionChapter() != "" &&
+						chemQuesDto.getChemQuestionGrade() != "" &&
+						chemQuesDto.getChemQuestionType() != "") {
+					
+					ChemQuestion question = chemQuesDto.dtoToQuestion();
+					
+					String success = "Successfully added the question : " 
+							.concat(chemQuesRepo
+									.save(question)
+									.toString());
+					successList.add(success);					
+				}else {
+					throw new NoSuchElementException();
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				String failure = "Failed to add "+chemQuesDto.toString();

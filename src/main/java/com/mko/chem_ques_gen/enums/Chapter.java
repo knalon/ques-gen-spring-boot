@@ -1,12 +1,12 @@
 package com.mko.chem_ques_gen.enums;
 
 public enum Chapter {
-	C1,
-	C2,
-	C3,
-	C4,
-	C5,
-	C6,
-	C7,
-	C8
+	CHAPTER_1,
+	CHAPTER_2,
+	CHAPTER_3,
+	CHAPTER_4,
+	CHAPTER_5,
+	CHAPTER_6,
+	CHAPTER_7,
+	CHAPTER_8
 }

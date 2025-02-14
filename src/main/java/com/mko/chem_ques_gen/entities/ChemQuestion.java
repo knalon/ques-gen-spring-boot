@@ -8,6 +8,7 @@ import com.mko.chem_ques_gen.enums.Chapter;
 import com.mko.chem_ques_gen.enums.Difficulty;
 import com.mko.chem_ques_gen.enums.Grade;
 import com.mko.chem_ques_gen.enums.QuestionType;
+import com.mko.chem_ques_gen.formatter.Formatter;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -52,18 +53,26 @@ public class ChemQuestion {
 	@Column(name = "difficulty")
 	private Difficulty chemQuestionDifficulty;
 	
+	@Column(name = "created_on")
+	private String createdOn;
+	
+	@Column(name = "last_updaed_on")
+	private String lastUpdatedOn;
+	
     @ManyToMany(cascade =  CascadeType.ALL,
 				mappedBy = "questions")
     private List<Paper> papers = new ArrayList<>();
 	
 	//----------------- End of Attributes
+    
 	public ChemQuestion() {
 		super();
 	}
 	
 	//for create
 	public ChemQuestion(Grade chemQuestionGrade, Chapter chemQuestionChapter, String chemQuestionLabe, QuestionType chemQuestionType,
-			String chemQuestionContent, String chemQuestionAnswer, Difficulty chemQuestionDifficulty) {
+			String chemQuestionContent, String chemQuestionAnswer, Difficulty chemQuestionDifficulty, 
+			String createdOn, String lastUpdatedOn) {
 		super();
 		this.chemQuestionGrade = chemQuestionGrade;
 		this.chemQuestionChapter = chemQuestionChapter;
@@ -72,10 +81,13 @@ public class ChemQuestion {
 		this.chemQuestionContent = chemQuestionContent;
 		this.chemQuestionAnswer = chemQuestionAnswer;
 		this.chemQuestionDifficulty = chemQuestionDifficulty;
+		this.createdOn = Formatter.dateTimeNow();
+		this.lastUpdatedOn = Formatter.dateTimeNow();
 	}
 	//for update
 	public ChemQuestion(Integer chemQuesId, Grade chemQuestionGrade, Chapter chemQuestionChapter, String chemQuestionLabe, QuestionType chemQuestionType,
-			String chemQuestionContent, String chemQuestionAnswer, Difficulty chemQuestionDifficulty) {
+			String chemQuestionContent, String chemQuestionAnswer, Difficulty chemQuestionDifficulty,
+			String createdOn, String lastUpdatedOn) {
 		super();
 		this.chemQuesId = chemQuesId;
 		this.chemQuestionGrade = chemQuestionGrade;
@@ -85,6 +97,8 @@ public class ChemQuestion {
 		this.chemQuestionContent = chemQuestionContent;
 		this.chemQuestionAnswer = chemQuestionAnswer;
 		this.chemQuestionDifficulty = chemQuestionDifficulty;
+		this.createdOn = (createdOn==null)?Formatter.dateTimeNow():createdOn;
+		this.lastUpdatedOn = Formatter.dateTimeNow();
 	}
 	
 	//--------------------------------- End of Constructors
@@ -145,6 +159,16 @@ public class ChemQuestion {
 		this.chemQuestionType = chemQuestionType;
 	}
 	
+	public String getLastUpdatedOn() {
+		return lastUpdatedOn;
+	}
+	public void setLastUpdatedOn(String now) {
+		this.lastUpdatedOn = now;
+	}
+	public String getCreatedOn() {
+		return createdOn;
+	}
+	
 
 	//------------------------------- End of Getter and Setter
 	
@@ -158,16 +182,20 @@ public class ChemQuestion {
 									this.getChemQuestionType().toString(),
 									this.getChemQuestionContent(), 
 									this.getChemQuestionAnswer(), 
-									this.getChemQuestionDifficulty().toString());
+									this.getChemQuestionDifficulty().toString(),
+									this.getCreatedOn(),
+									this.getLastUpdatedOn());
 	}
 
-	// Easier access
 	@Override
 	public String toString() {
-		return "ChemQuestion [chemQuesId=" + chemQuesId + ", chemQuestionChapter=" + chemQuestionChapter
-				+ ", chemQuestionLabe=" + chemQuestionLabel + ", chemQuestionType=" + chemQuestionType
-				+ ", chemQuestionContent=" + chemQuestionContent + ", chemQuestionAnswer=" + chemQuestionAnswer
-				+ ", chemQuestionDifficulty=" + chemQuestionDifficulty + "]";
+		return "ChemQuestion [chemQuesId=" + chemQuesId + ", chemQuestionGrade=" + chemQuestionGrade
+				+ ", chemQuestionChapter=" + chemQuestionChapter + ", chemQuestionLabel=" + chemQuestionLabel
+				+ ", chemQuestionType=" + chemQuestionType + ", chemQuestionContent=" + chemQuestionContent
+				+ ", chemQuestionAnswer=" + chemQuestionAnswer + ", chemQuestionDifficulty=" + chemQuestionDifficulty
+				+ ", createdOn=" + createdOn + ", lastUpdatedOn=" + lastUpdatedOn + "]";
 	}
+
+
 
 }

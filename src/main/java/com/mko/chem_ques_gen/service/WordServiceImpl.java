@@ -11,8 +11,8 @@ import org.apache.xmlbeans.XmlException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mko.chem_ques_gen.entities.ChemQuestion;
 import com.mko.chem_ques_gen.entities.Paper;
-import com.mko.chem_ques_gen.entities.wrapper.ChemQuestionWrapper;
 import com.mko.chem_ques_gen.enums.QuestionType;
 import com.mko.chem_ques_gen.word.WordHelper;
 import com.mko.chem_ques_gen.word.WordRun;
@@ -36,12 +36,13 @@ public class WordServiceImpl implements WordService{
 							+"chem_ques_gen_sprint_1.2\\word\\"
 							+paper.getYear()+" "+paper.getMonth()+" "+paper.getTitle()+".docx";
     	
+		String timeAllowed = "TIME Allowed ( "+paper.gettimeAllowed()+" )";
 		List<String> titleString = new ArrayList<>(
     									List.of("UNIQUE Private High School",
     											paper.getTitle(),
     											paper.getGrade().toString(),
     											"CHEMISTRY",
-    											"TIME Allowed (45 minutes)"));
+    											timeAllowed));
 		
 		try (XWPFDocument document = new XWPFDocument()) {
 			
@@ -54,22 +55,14 @@ public class WordServiceImpl implements WordService{
 			
 			// Create a new paragraph
 			
-			List<ChemQuestionWrapper> wrappers = paperService.paperToWrapperList(paper);
+			List<ChemQuestion> questions = paper.getQuestions(); 
 			int questionCount = 1;
 			
 			for (int i = 0; i < QuestionType.values().length; i++) {
-		    	
-				List<ChemQuestionWrapper> wrapperList = new ArrayList<>();
-				
-		        // Filter wrapper by current QuestionType
-		        for (ChemQuestionWrapper wrapper: wrappers) {
-		            if (QuestionType.values()[i].toString() == wrapper.getChemQuestionType()) {
-		                wrapperList.add(wrapper);
-		            }
-		        }
-		        
+		    					
+        
 		        // Skip if no wrapper for the current type
-		        if (wrapperList.isEmpty()) {
+		        if (questions.isEmpty()) {
 		            continue;
 		        }
 		        
@@ -85,8 +78,8 @@ public class WordServiceImpl implements WordService{
 		        questionCount++;
 		        
 		        
-		        for(ChemQuestionWrapper wrapper: wrapperList) {
-		        	String para = "$t:"+(char)(subQuestionCount+96)+". $t:"+ wrapper.getChemQuestionContent();
+		        for(ChemQuestion question: questions) {
+		        	String para = "$t:"+(char)(subQuestionCount+96)+". $t:"+ question.getChemQuestionContent();
 		        	String type = QuestionType.values()[i].toString().toUpperCase();
 		        	
 		        	XWPFParagraph questionContent = run.runParagraph(document, para,type);

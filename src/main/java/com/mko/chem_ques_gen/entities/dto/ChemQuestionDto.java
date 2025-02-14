@@ -1,5 +1,6 @@
 package com.mko.chem_ques_gen.entities.dto;
 
+
 import com.mko.chem_ques_gen.entities.ChemQuestion;
 import com.mko.chem_ques_gen.enums.EnumFactory;
 
@@ -8,12 +9,14 @@ public class ChemQuestionDto {
 	private String chemQuestionGrade;
 	
 	private String chemQuestionChapter;
-	private String chemQuestionLabe;
+	private String chemQuestionLabel;
 	private String chemQuestionType;
 	
 	private String chemQuestionContent;
 	private String chemQuestionAnswer;
 	private String chemQuestionDifficulty;
+	private String createdOn;
+	private String lastUpdatedOn;
 
 	//------------------------ end of attributes
 	
@@ -21,31 +24,21 @@ public class ChemQuestionDto {
 		super();
 	}
 	
-	//for create
-	public ChemQuestionDto(String chemQuestionGrade, String chemQuestionChapter, String chemQuestionLabe, String chemQuesType,
-			String chemQuestionContent, String chemQuestionAnswer, String chemQuestionDifficulty) {
-		super();
-		this.chemQuestionGrade = chemQuestionGrade;
-		this.chemQuestionChapter = chemQuestionChapter;
-		this.chemQuestionLabe = chemQuestionLabe;
-		this.chemQuestionType = chemQuesType;
-		this.chemQuestionContent = chemQuestionContent;
-		this.chemQuestionAnswer = chemQuestionAnswer;
-		this.chemQuestionDifficulty = chemQuestionDifficulty;
-	}
-	
 	//for update
-	public ChemQuestionDto(Integer chemQuesId,String chemQuestionGrade, String chemQuestionChapter, String chemQuestionLabe, String chemQuesType,
-			String chemQuestionContent, String chemQuestionAnswer, String chemQuestionDifficulty) {
+	public ChemQuestionDto(Integer chemQuesId,String chemQuestionGrade, String chemQuestionChapter, String chemQuestionLabel, String chemQuesType,
+			String chemQuestionContent, String chemQuestionAnswer, String chemQuestionDifficulty,
+			String createdOn, String lastUpdatedOn) {
 		super();
 		this.chemQuestionId = chemQuesId;
 		this.chemQuestionGrade = chemQuestionGrade;
 		this.chemQuestionChapter = chemQuestionChapter;
-		this.chemQuestionLabe = chemQuestionLabe;
+		this.chemQuestionLabel = chemQuestionLabel;
 		this.chemQuestionType = chemQuesType;
 		this.chemQuestionContent = chemQuestionContent;
 		this.chemQuestionAnswer = chemQuestionAnswer;
 		this.chemQuestionDifficulty = chemQuestionDifficulty;
+		this.createdOn = createdOn ;
+		this.lastUpdatedOn = lastUpdatedOn;
 	}
 	
 	//------------------------ end of constructors
@@ -70,11 +63,11 @@ public class ChemQuestionDto {
 	public void setChemQuestionChapter(String chemQuestionChapter) {
 		this.chemQuestionChapter = chemQuestionChapter;
 	}
-	public String getChemQuestionLabe() {
-		return chemQuestionLabe;
+	public String getchemQuestionLabel() {
+		return chemQuestionLabel;
 	}
-	public void setChemQuestionLabe(String chemQuestionLabe) {
-		this.chemQuestionLabe = chemQuestionLabe;
+	public void setchemQuestionLabel(String chemQuestionLabel) {
+		this.chemQuestionLabel = chemQuestionLabel;
 	}
 	public String getChemQuestionContent() {
 		return chemQuestionContent;
@@ -100,31 +93,44 @@ public class ChemQuestionDto {
 	public void setChemQuestionType(String chemQuestionType) {
 		this.chemQuestionType = chemQuestionType;
 	}
+	
+	public String getCreatedOn() {
+		return createdOn;
+	}
 
+	public String getLastUpdatedOn() {
+		return lastUpdatedOn;
+	}
+	
+	public void setLastUpdatedOn(String lastUpdatedOn) {
+		this.lastUpdatedOn = lastUpdatedOn;
+	}
+	
 
 	//------------------------- end of getter and setter
 	
+
 	public ChemQuestion dtoToQuestion() {
 		return new ChemQuestion(this.getChemQuestionId(),
 								EnumFactory.generateGrade(this.getChemQuestionGrade()),
 								EnumFactory.generateChapter(this.getChemQuestionChapter()), 
-								this.getChemQuestionLabe(), 
+								this.getchemQuestionLabel(), 
 								EnumFactory.generateQuestionType(this.getChemQuestionType()), 
 								this.getChemQuestionContent(),
 								this.getChemQuestionAnswer(), 
-								EnumFactory.generateDifficulty(this.getChemQuestionDifficulty()));
+								EnumFactory.generateDifficulty(this.getChemQuestionDifficulty()),
+								this.getCreatedOn(),
+								this.getLastUpdatedOn());
 	}
 
 	@Override
 	public String toString() {
 		return "ChemQuestionDto [chemQuestionId=" + chemQuestionId + ", chemQuestionGrade=" + chemQuestionGrade
-				+ ", chemQuestionChapter=" + chemQuestionChapter + ", chemQuestionLabe=" + chemQuestionLabe
+				+ ", chemQuestionChapter=" + chemQuestionChapter + ", chemQuestionLabel=" + chemQuestionLabel
 				+ ", chemQuestionType=" + chemQuestionType + ", chemQuestionContent=" + chemQuestionContent
 				+ ", chemQuestionAnswer=" + chemQuestionAnswer + ", chemQuestionDifficulty=" + chemQuestionDifficulty
-				+ "]";
+				+ ", createdOn=" + createdOn + ", lastUpdatedOn=" + lastUpdatedOn + "]";
 	}
 
 
-	
-	
 }

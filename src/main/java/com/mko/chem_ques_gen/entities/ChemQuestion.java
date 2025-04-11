@@ -43,7 +43,7 @@ public class ChemQuestion {
 	private QuestionType chemQuestionType;
 	
 	
-	@Column(name = "content")
+	@Column(name = "content", length = 500)
 	private String chemQuestionContent;
 	
 	@Column(name = "answer")

@@ -48,18 +48,7 @@ public class PaperController {
 	public Paper findPaperById(@PathVariable Integer paperId){
 		return paperService.findPaperById(paperId);
 	}
-	
-	
-	@GetMapping("/review/format/{paperId}")
-	public ResponseEntity<String> getFormatPaperById(@PathVariable Integer paperId){
-		try {
-			return paperService.getFormatPaperById(paperId);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			return new ResponseEntity<>("no question with this id is found",HttpStatus.NOT_FOUND);
-		}
-	}
-	
+
 	//------------------------------------------------update
 	
 	@PutMapping("/edit/{paperId}/{oldQuesId}/{newQuesId}")

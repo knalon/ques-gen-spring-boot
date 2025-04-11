@@ -132,7 +132,14 @@ public class WordHelper {
 	        for (int i = 0; i < paragraph.length(); i++) {
 	            char currentChar = paragraph.charAt(i);
 
-	            if (currentChar == '|' || currentChar == '^' || currentChar == '$') {
+	            
+	            // |text:			-subScript
+	            // ^text:			-superScript
+	            // $t: 				-tab
+	            // $br:				-carriage return
+	            
+	            
+	            if (currentChar == '|' || currentChar == '^' || currentChar == '$' || currentChar == '#') {
 	                // Add the current substring to the list before starting special mode
 	                if (currentSubstring.length() > 0) {
 	                    substrings.add(currentSubstring.toString());

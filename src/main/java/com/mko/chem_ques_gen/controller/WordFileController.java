@@ -2,6 +2,7 @@ package com.mko.chem_ques_gen.controller;
 
 import java.io.IOException;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.xmlbeans.XmlException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,16 +25,21 @@ public class WordFileController {
 	@Autowired
 	WordServiceImpl wordService;
 
-	@GetMapping("/test")
-	public void test(){
-		wordService.testSubString();
-	}
+//	@GetMapping("/test")
+//	public void test(){
+//		wordService.testSubString();
+//	}
 
 	
     @GetMapping("/generate/{paperId}")
-    public ResponseEntity<String> generateWordFile(@PathVariable Integer paperId) throws XmlException {
+    public ResponseEntity<String> generateWordFile(@PathVariable Integer paperId) throws XmlException, InvalidFormatException {
     	try {
-			return new ResponseEntity<>(wordService.createWord(paperId),HttpStatus.OK);
+			try {
+				return new ResponseEntity<>(wordService.createWord(paperId),HttpStatus.OK);
+			} catch (XmlException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

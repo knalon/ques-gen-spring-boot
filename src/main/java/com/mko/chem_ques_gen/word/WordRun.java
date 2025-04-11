@@ -1,8 +1,16 @@
 package com.mko.chem_ques_gen.word;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.VerticalAlign;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -11,10 +19,20 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import com.mko.chem_ques_gen.entities.Image;
+import com.mko.chem_ques_gen.service.ImageService;
+
+@Component
 public class WordRun {
+
+	@Autowired
+    private ImageService imageService;
 	
-	WordHelper helper = new WordHelper();
+    private final WordHelper helper = new WordHelper();
+
 	//----------------run methods
 	
 	public void runTitle(XWPFDocument document, Integer tableWidth, List<String> titleString) {
@@ -74,7 +92,7 @@ public class WordRun {
 		
 	}
 	
-	public XWPFParagraph runParagraph(XWPFDocument document, String para, String type) {
+	public XWPFParagraph runParagraph(XWPFDocument document, String para, String type) throws InvalidFormatException, IOException {
         
 		XWPFParagraph paragraph = document.createParagraph();
 		paragraph.setAlignment(ParagraphAlignment.BOTH);
@@ -130,14 +148,53 @@ public class WordRun {
 		}
 	}
 	
-	public void runMultipleSubStrings(XWPFParagraph paragraph, List<String> subStrings) {
+	public void runWithImage(XWPFParagraph paragraph, String imageName) throws InvalidFormatException, IOException {
+	    if (paragraph == null || imageName == null || imageName.isEmpty()) {
+	        throw new IllegalArgumentException("Paragraph or image name cannot be null/empty.");
+	    }
+
+	    Image image = imageService.getImageByName(imageName);
+	    if (image == null || image.getImageData() == null) {
+	        throw new IOException("Image not found or image data is null for name: " + imageName);
+	    }
+
+	    XWPFRun run = paragraph.createRun();
+	    try (InputStream byteInputStream = new ByteArrayInputStream(image.getImageData())) {
+//	    	 BufferedImage bufferedImage = ImageIO.read(byteInputStream);
+//	    	 
+//	        int originalWidthPixels = bufferedImage.getWidth();
+//	        int originalHeightPixels = bufferedImage.getHeight();
+//
+//	            // Convert pixels to EMUs
+//	        int widthEMU = Units.pixelToEMU(originalWidthPixels);
+//	        int heightEMU = Units.pixelToEMU(originalHeightPixels);
+	        int widthEMU = image.getWidthInCm()*360000;
+	        int heightEMU = image.getHeightInCm()*360000;
+	        System.out.println("widthEMU : "+widthEMU);
+	        System.out.println("heightEMU : "+heightEMU);
+	        
+	        run.addPicture(byteInputStream, XWPFDocument.PICTURE_TYPE_PNG, imageName, widthEMU, heightEMU);
+	    }catch(Exception e) {
+	    	System.out.println("inside exception");
+	    	e.printStackTrace();
+	    }
+	}
+
+	public void runMultipleSubStrings(XWPFParagraph paragraph, List<String> subStrings) throws InvalidFormatException, IOException {
 		for(String s: subStrings) {
 			if(s.charAt(0) == '|') {
+				//    |sub: is subscript
 				this.runSubScript(paragraph, s.substring(1));
 			}else if(s.charAt(0) == '^') {
+				//    ^sup: is superscript
 				this.runSuperScript(paragraph, s.substring(1));
 			}else if(s.charAt(0) == '$') {
+				//    $t: is tab
+				//    $br: is new line
 				this.runWithKey(paragraph, s.substring(1));
+			}else if(s.charAt(0) == '#'){
+				// 	  #image.png: is image
+				runWithImage(paragraph, s.substring(1));
 			}else {
 				this.runNormal(paragraph, s);
 			}

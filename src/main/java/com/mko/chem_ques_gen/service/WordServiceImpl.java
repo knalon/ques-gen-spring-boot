@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.xmlbeans.XmlException;
@@ -22,12 +23,12 @@ public class WordServiceImpl implements WordService{
 	
 	@Autowired
 	PaperServiceImpl paperService;
-	
-	WordRun run = new WordRun();
+	@Autowired
+	WordRun run;
 	WordHelper helper = new WordHelper();
 	
 	@Override
-	public String createWord(Integer paperId) throws IOException, XmlException {
+	public String createWord(Integer paperId) throws IOException, XmlException, InvalidFormatException {
 		
 		Paper paper = paperService.findPaperById(paperId);
 		
@@ -62,7 +63,15 @@ public class WordServiceImpl implements WordService{
 		    					
         
 		        // Skip if no wrapper for the current type
-		        if (questions.isEmpty()) {
+				
+				List<ChemQuestion> filteredQuestions = new ArrayList<>();
+				for(ChemQuestion question: questions) {
+					if(question.getChemQuestionType() == QuestionType.values()[i]) {
+						filteredQuestions.add(question);
+					}
+				}
+				
+		        if (filteredQuestions.isEmpty()) {
 		            continue;
 		        }
 		        
@@ -71,15 +80,28 @@ public class WordServiceImpl implements WordService{
 		        //assumption here is that TF/FB/MCQ are defined in this order in the enum value.
 		        String[] mainQuesList = {".  Write TRUE or FALSE for each of the following statements",
 		        							".  Fill in the blanks with the correct word(s), phrase(s), term(s), unit(s), etc.., as necessary",
-		        							".  Select the correct word(s), notation(s), term(s), unit(s), etc.., given in the brackets"
+		        							".  Select the correct word(s), notation(s), term(s), unit(s), etc.., given in the brackets",
+		        							". 5 marks"
 		        						};  
-		        		        
-		        run.runMainQues(document, (questionCount+mainQuesList[i]), "(25 marks)");
+		        	
+		        String marks="";
+		        if(i <3) {
+		        	marks = "( "+filteredQuestions.size()+" marks)";		        	
+		        }else {
+		        	marks = "( "+filteredQuestions.size()*5+" marks)"; 
+		        }
+		        run.runMainQues(document, (questionCount+mainQuesList[i]), marks);
 		        questionCount++;
 		        
 		        
-		        for(ChemQuestion question: questions) {
-		        	String para = "$t:"+(char)(subQuestionCount+96)+". $t:"+ question.getChemQuestionContent();
+		        for(ChemQuestion question: filteredQuestions) {
+
+		        	String ordinalNumber= ""+(char)(subQuestionCount+96);; 
+		        	if(filteredQuestions.size()>26) {
+		        		ordinalNumber = subQuestionCount+"";
+		        	}
+		       
+		        	String para = "$t:"+ordinalNumber+".$t:"+ question.getChemQuestionContent();
 		        	String type = QuestionType.values()[i].toString().toUpperCase();
 		        	
 		        	XWPFParagraph questionContent = run.runParagraph(document, para,type);
@@ -105,7 +127,7 @@ public class WordServiceImpl implements WordService{
 
 
 	String text = "The formula of ammonia NH_3: is authentic. An example of a positively charged ion is H^2:.";
-	public void testSubString(){
+	public void testSubString() throws InvalidFormatException{
 		
 		// Save the document to a file
 		String filePath = "C:\\Users\\mko\\Documents\\workspace-spring-tool-suite-4-4.18.1.RELEASE\\"

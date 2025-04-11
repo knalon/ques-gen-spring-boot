@@ -2,7 +2,6 @@ package com.mko.chem_ques_gen.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,11 +12,9 @@ import com.mko.chem_ques_gen.entities.ChemQuestion;
 import com.mko.chem_ques_gen.entities.Paper;
 import com.mko.chem_ques_gen.entities.dto.PaperDto;
 import com.mko.chem_ques_gen.entities.requirements.ChemPaperRequirement;
-import com.mko.chem_ques_gen.entities.requirements.PaperEditRequirement;
 import com.mko.chem_ques_gen.entities.requirements.QuestionRequirement;
 import com.mko.chem_ques_gen.enums.EnumFactory;
 import com.mko.chem_ques_gen.enums.LabelVerification;
-import com.mko.chem_ques_gen.enums.QuestionType;
 import com.mko.chem_ques_gen.repository.PaperRepository;
 
 import jakarta.transaction.Transactional;
@@ -75,7 +72,7 @@ public class PaperServiceImpl implements PaperService{
 		paperRepo.save(paper);
 		System.out.println("after paper save.");
 		
-		return new ResponseEntity<>(paper.paperToDto(),HttpStatus.CREATED);
+		return new ResponseEntity<>(paper.paperToDto(),HttpStatus.OK);
 	}
 
 	//=============== CRUD
@@ -84,7 +81,12 @@ public class PaperServiceImpl implements PaperService{
 		return paperRepo.findById(paperId).get();
 	}
 	public ResponseEntity<List<Paper>> findAllPaper() {
-		return new ResponseEntity<> (paperRepo.findAll(),HttpStatus.OK);
+		try {
+			return new ResponseEntity<> (paperRepo.findAll(),HttpStatus.OK);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return new ResponseEntity<>(new ArrayList<>(),HttpStatus.NOT_FOUND);
+		}
 	}
 	//=======delete
 	public ResponseEntity<String> deletePaperById(Integer paperId) {
